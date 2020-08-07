@@ -197,16 +197,10 @@ describe('updating a blog', () => {
 
 describe('deletion of a blog', () => {
     test('a blog can be deleted', async () => {
-        const tokenforUser = {
-            username: 'root',
-            password: 'sekret'
-        }
-        const userDetails = await api.post('/api/login').send(tokenforUser).expect(200)
         const blogsAtStart = await helper.blogsInDb()
         const blogToDelete = blogsAtStart[0]
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
-            .set('authorization',`bearer ${userDetails.body.token}`)
             .expect(204)
 
         const blogsAtEnd = await helper.blogsInDb()
