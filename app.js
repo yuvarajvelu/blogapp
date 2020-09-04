@@ -1,6 +1,7 @@
 const config = require('./utils/config')
 require('express-async-errors')
 const express = require('express')
+const helmet = require('helmet')
 const app = express()
 const cors = require('cors')
 const blogsRouter = require('./controllers/blogs')
@@ -21,6 +22,7 @@ mongoose.connect(config.url, { useNewUrlParser: true, useUnifiedTopology: true, 
     })
 
 app.use(cors())
+app.use(helmet())
 app.use(express.static('build'))
 app.use(express.json())
 app.use(middleware.requestLogger)

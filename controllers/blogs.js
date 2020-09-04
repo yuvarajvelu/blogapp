@@ -17,14 +17,6 @@ blogsRouter.get('/:id', async (request, response) => {
     }
 })
 
-// const getTokenFrom = request => {
-//     const authorization = request.get('authorization')
-//     if( authorization && authorization.toLowerCase().startsWith('bearer ')) {
-//         return authorization.substr(7)
-//     }
-//     return null
-// }
-
 blogsRouter.post('/', async (request, response) => {
     const body = request.body
     const token = request.token
@@ -59,12 +51,25 @@ blogsRouter.put('/:id', async (request, response) => {
     response.json(updatedBlog)
 })
 
+blogsRouter.post('/:id/comments', async (request, response) => {
+    const body = request.body
+    if(body.comment === '' ) {
+        return response.status(401).send({ 'error': 'empty comment' })
+    }
+    const blog = await Blog.findById(request.params.id)
+    blog.comments.push(body.comment)
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+    response.json(updatedBlog)
+
+})
+
 blogsRouter.delete('/:id', async (request, response) => {
     // eslint-disable-next-line no-undef
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if(!decodedToken) {
         return response.status(401).send({ 'error': 'Invalid token or missing token' })
     }
+
     const blog = await Blog.findById(request.params.id)
     if(blog.user.toString() === decodedToken.id) {
         await Blog.findByIdAndDelete(request.params.id)
